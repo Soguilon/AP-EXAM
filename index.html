@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grade 7 AP Quiz: Timog-Silangang Asya</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #ffffff;
+    color: #000000;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 2px solid #000000;
+  }
+  h1 {
+    text-align: center;
+    font-size: 1.4em;
+    border-bottom: 2px solid #000000;
+    padding-bottom: 10px;
+    margin-top: 0;
+  }
+  .progress {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 0.95em;
+  }
+  .question-box {
+    border: 1px solid #000000;
+    padding: 15px;
+    margin-bottom: 15px;
+    min-height: 60px;
+  }
+  .question-text {
+    font-size: 1.15em;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  .options {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .options li {
+    border: 1px solid #000000;
+    padding: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .options li:hover {
+    background: #f0f0f0;
+  }
+  .options li.selected {
+    background: #000000;
+    color: #ffffff;
+  }
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    gap: 10px;
+  }
+  button {
+    font-family: inherit;
+    background: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+    padding: 10px 18px;
+    cursor: pointer;
+    font-size: 1em;
+  }
+  button:hover:not(:disabled) {
+    background: #000000;
+    color: #ffffff;
+  }
+  button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .center-btn {
+    display: block;
+    margin: 20px auto 0 auto;
+  }
+  .results {
+    text-align: center;
+  }
+  .results h2 {
+    border-bottom: 2px solid #000000;
+    padding-bottom: 10px;
+  }
+  .score-line {
+    font-size: 1.3em;
+    margin: 10px 0;
+  }
+  .review-item {
+    border: 1px solid #000000;
+    padding: 10px;
+    margin-bottom: 8px;
+    text-align: left;
+  }
+  .review-item.correct {
+    border-left: 6px solid #000000;
+  }
+  .review-item.incorrect {
+    border-left: 6px solid #000000;
+    background: #eeeeee;
+  }
+  .review-item p {
+    margin: 4px 0;
+  }
+  .label-correct::before {
+    content: "✔ ";
+  }
+  .label-incorrect::before {
+    content: "✘ ";
+  }
+  .hidden {
+    display: none;
+  }
+  @media (max-width: 600px) {
+    .container {
+      margin: 10px;
+      padding: 12px;
+    }
+    h1 {
+      font-size: 1.1em;
+    }
+    .question-text {
+      font-size: 1em;
+    }
+    button {
+      padding: 8px 12px;
+      font-size: 0.9em;
+    }
+    .nav-buttons {
+      flex-wrap: wrap;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Grade 7 AP Quiz: Timog-Silangang Asya</h1>
+
+  <div id="quizScreen">
+    <div class="progress" id="progressText"></div>
+    <div class="question-box">
+      <div class="question-text" id="questionText"></div>
+      <ul class="options" id="optionsList"></ul>
+    </div>
+    <div class="nav-buttons">
+      <button id="prevBtn">Previous</button>
+      <button id="nextBtn">Next</button>
+    </div>
+  </div>
+
+  <div id="resultsScreen" class="results hidden">
+    <h2>Tapos na ang Quiz</h2>
+    <div class="score-line" id="scoreLine"></div>
+    <div class="score-line" id="percentLine"></div>
+    <div id="reviewList"></div>
+    <button class="center-btn" id="restartBtn">Ulitin ang Quiz</button>
+  </div>
+</div>
+
+<script>
+// ---------- Question Bank (50 items) - Grade 7 AP: Timog-Silangang Asya ----------
+const questionBank = [
+  {
+    question: "Ano ang Heograpiya?",
+    options: [
+      "Ang siyentipikong pag-aaral ng daigdig, ang mga pisikal na katangian nito, at ugnayan ng tao sa kapaligiran",
+      "Ang pag-aaral lamang ng kasaysayan ng mga bansa",
+      "Ang pag-aaral ng mga wika sa daigdig",
+      "Ang pag-aaral ng ekonomiya ng isang bansa"
+    ],
+    correct: "Ang siyentipikong pag-aaral ng daigdig, ang mga pisikal na katangian nito, at ugnayan ng tao sa kapaligiran"
+  },
+  {
+    question: "Saan nagmula ang salitang 'Heograpiya'?",
+    options: [
+      "Mga salitang Griyego na geo at graphia",
+      "Mga salitang Latin na terra at scriptum",
+      "Mga salitang Sanskrit",
+      "Mga salitang Arabic"
+    ],
+    correct: "Mga salitang Griyego na geo at graphia"
+  },
+  {
+    question: "Aling sangay ng Heograpiya ang nakatuon sa klima, anyong-lupa, anyong-tubig, at likas na yaman?",
+    options: ["Heograpiyang Pisikal", "Heograpiyang Pantao", "Heograpiyang Politikal", "Heograpiyang Ekonomiko"],
+    correct: "Heograpiyang Pisikal"
+  },
+  {
+    question: "Aling sangay ng Heograpiya ang nakapokus sa kultura, populasyon, wika, at ekonomiya?",
+    options: ["Heograpiyang Pantao", "Heograpiyang Pisikal", "Heograpiyang Klimatik", "Heograpiyang Heolohiko"],
+    correct: "Heograpiyang Pantao"
+  },
+  {
+    question: "Ano ang tawag sa malalaking masa ng lupa na direktang konektado sa pangunahing kontinente?",
+    options: ["Mainland", "Insular", "Peninsula", "Archipelago"],
+    correct: "Mainland"
+  },
+  {
+    question: "Ano ang tawag sa mga bansang binubuo ng isla o kapuluan na hiwalay sa pangunahing kontinente?",
+    options: ["Insular", "Mainland", "Kontinental", "Rehiyonal"],
+    correct: "Insular"
+  },
+  {
+    question: "Alin sa mga sumusunod ang HINDI kabilang sa Mainland Southeast Asia?",
+    options: ["Indonesia", "Vietnam", "Thailand", "Cambodia"],
+    correct: "Indonesia"
+  },
+  {
+    question: "Aling bahagi ng Malaysia ang itinuturing na mainland (Peninsular)?",
+    options: ["West Malaysia/Malaysian Peninsular", "Sabah", "Sarawak", "Borneo"],
+    correct: "West Malaysia/Malaysian Peninsular"
+  },
+  {
+    question: "Ano ang klima?",
+    options: [
+      "Pangkaraniwan at pangmatagalang kalagayan at pattern ng panahon sa isang rehiyon",
+      "Ang pang-araw-araw na temperatura lamang",
+      "Ang dami ng ulan sa isang linggo",
+      "Ang bilis ng hangin sa isang araw"
+    ],
+    correct: "Pangkaraniwan at pangmatagalang kalagayan at pattern ng panahon sa isang rehiyon"
+  },
+  {
+    question: "Ano ang tumutukoy sa uri at dami ng mga halaman (puno, damo, shrubs) na tumutubo sa isang lugar?",
+    options: ["Vegetation Cover", "Klima", "Topograpiya", "Ekosistema"],
+    correct: "Vegetation Cover"
+  },
+  {
+    question: "Ang hanging habagat at amihan ay tinatawag na:",
+    options: ["Monsoon", "Typhoon", "Trade wind", "El Niño"],
+    correct: "Monsoon"
+  },
+  {
+    question: "Bakit madalas ang lindol at pagputok ng bulkan sa Timog-Silangang Asya?",
+    options: [
+      "Dahil nasa Pacific Ring of Fire ang rehiyon",
+      "Dahil malapit sa Arctic ang rehiyon",
+      "Dahil walang bundok sa rehiyon",
+      "Dahil desyerto ang karamihan ng lupa"
+    ],
+    correct: "Dahil nasa Pacific Ring of Fire ang rehiyon"
+  },
+  {
+    question: "Aling mga bansa ang kilala sa turismo dahil sa baybayin, kagubatan, at bulubundukin?",
+    options: ["Thailand, Vietnam, at Pilipinas", "Laos, Myanmar, at Brunei", "Singapore lamang", "Timor Leste lamang"],
+    correct: "Thailand, Vietnam, at Pilipinas"
+  },
+  {
+    question: "Aling likas na yaman ang tumutukoy sa Mekong River basin bilang pangunahing tagasuplay ng bigas?",
+    options: ["Yamang Lupa", "Yamang Tubig", "Yamang Mineral", "Yamang Gubat"],
+    correct: "Yamang Lupa"
+  },
+  {
+    question: "Aling likas na yaman ang tumutukoy sa pangingisda at mga coral reef?",
+    options: ["Yamang Tubig", "Yamang Lupa", "Yamang Mineral", "Yamang Gubat"],
+    correct: "Yamang Tubig"
+  },
+  {
+    question: "Aling mga bansa ang pangunahing tagapagluwas ng petrolyo at natural gas?",
+    options: ["Brunei, Malaysia, at Indonesia", "Pilipinas, Laos, at Vietnam", "Singapore at Timor Leste", "Thailand at Cambodia"],
+    correct: "Brunei, Malaysia, at Indonesia"
+  },
+  {
+    question: "Aling likas na yaman ang nagbibigay ng matitigas na kahoy tulad ng teak at yakal?",
+    options: ["Yamang Gubat", "Yamang Lupa", "Yamang Tubig", "Yamang Mineral"],
+    correct: "Yamang Gubat"
+  },
+  {
+    question: "Ilan ang pangunahing suliraning pangkapaligiran sa Timog-Silangang Asya?",
+    options: ["Tatlo (3)", "Dalawa (2)", "Apat (4)", "Lima (5)"],
+    correct: "Tatlo (3)"
+  },
+  {
+    question: "Ano ang pangunahing dulot ng deforestation sa rehiyon?",
+    options: [
+      "Labis na pagtotroso, pagmimina, at pagpapalit ng lupa para sa plantasyon",
+      "Sobrang lamig ng klima",
+      "Kakulangan ng populasyon",
+      "Pagtaas ng bilang ng isda"
+    ],
+    correct: "Labis na pagtotroso, pagmimina, at pagpapalit ng lupa para sa plantasyon"
+  },
+  {
+    question: "Alin sa mga sumusunod ang epekto ng deforestation?",
+    options: [
+      "Pagbaha at pagguho ng lupa",
+      "Pagbaba ng temperatura ng dagat",
+      "Pagdami ng puno",
+      "Paglago ng agrikultura"
+    ],
+    correct: "Pagbaha at pagguho ng lupa"
+  },
+  {
+    question: "Ano ang dulot ng mabilis na urbanisasyon at mahinang waste management sa karagatan?",
+    options: ["Plastik sa Karagatan", "Pagtaas ng isda", "Paglaki ng coral reef", "Pagbaba ng dagat"],
+    correct: "Plastik sa Karagatan"
+  },
+  {
+    question: "Bakit labis na apektado ng pagbabago ng klima ang Pilipinas, Indonesia, at Vietnam?",
+    options: [
+      "Dahil ang mga ito ay kapuluan/bansang baybayin",
+      "Dahil sila ang pinakamalaking bansa",
+      "Dahil walang dagat sa mga ito",
+      "Dahil sila ang pinakamataas sa elevation"
+    ],
+    correct: "Dahil ang mga ito ay kapuluan/bansang baybayin"
+  },
+  {
+    question: "Ano ang etnisidad?",
+    options: [
+      "Ang pangkat na kinabibilangan ng isang tao na may magkakatulad na pagkakakilanlang kultural",
+      "Ang kasarian ng isang tao",
+      "Ang edad ng isang tao",
+      "Ang trabaho ng isang tao"
+    ],
+    correct: "Ang pangkat na kinabibilangan ng isang tao na may magkakatulad na pagkakakilanlang kultural"
+  },
+  {
+    question: "Ano ang etnolingguwistiko?",
+    options: [
+      "Ang pag-aaral ng kaugnayan ng wika sa kultura ng magkakaibang pangkat ng tao",
+      "Ang pag-aaral ng klima ng isang rehiyon",
+      "Ang pag-aaral ng anyong-lupa",
+      "Ang pag-aaral ng ekonomiya"
+    ],
+    correct: "Ang pag-aaral ng kaugnayan ng wika sa kultura ng magkakaibang pangkat ng tao"
+  },
+  {
+    question: "Sa Thailand, aling relihiyon ang pinaka-namumuno kasama ng Hinduism at Animism?",
+    options: ["Theravada Buddhism", "Islam", "Roman Katoliko", "Confucianism"],
+    correct: "Theravada Buddhism"
+  },
+  {
+    question: "Sa Myanmar, ano ang mahalagang isinasaalang-alang bukod sa relihiyon?",
+    options: [
+      "Paggalang sa nakakatanda at disenteng pananamit",
+      "Pagsasayaw sa publiko",
+      "Pagsasagawa ng negosyo lamang",
+      "Pag-iwas sa kapwa tao"
+    ],
+    correct: "Paggalang sa nakakatanda at disenteng pananamit"
+  },
+  {
+    question: "Sa Laos, ano ang tawag sa Lao ng lowland?",
+    options: ["Lao Loum", "Lao Theung", "Lao Soung", "Lao Khmu"],
+    correct: "Lao Loum"
+  },
+  {
+    question: "Ano ang karaniwang trabaho ng mga tao sa Laos?",
+    options: ["Pagsasaka", "Pangingisda", "Pagmimina", "Kalakalan"],
+    correct: "Pagsasaka"
+  },
+  {
+    question: "Sa Malaysia (Peninsular), ano ang tawag sa mga katutubong Malaysian kasama ang Malay?",
+    options: ["Bumiputra", "Non-Bumiputra", "Orang Asli", "Peranakan"],
+    correct: "Bumiputra"
+  },
+  {
+    question: "Sa Vietnam, anong uri ng sistema ng pamilya ang sinusunod, kung saan ang anak ay umaangkin sa pangalan at pamana ng ama?",
+    options: ["Patrilineal", "Matrilineal", "Bilateral", "Communal"],
+    correct: "Patrilineal"
+  },
+  {
+    question: "Alin sa mga sumusunod ang relihiyon sa Vietnam?",
+    options: ["Buddhism, Confucianism, Taoism, at Roman Catholicism", "Islam lamang", "Hinduism lamang", "Shinto"],
+    correct: "Buddhism, Confucianism, Taoism, at Roman Catholicism"
+  },
+  {
+    question: "Sa Cambodia, ano ang tawag sa pinaghalong paniniwala sa Buddhism, Taoism, at Confucianism?",
+    options: ["Cao Dai", "Devaraja", "Mandala", "Sultanato"],
+    correct: "Cao Dai"
+  },
+  {
+    question: "Alin sa mga sumusunod ang tampok na kultura ng Pilipinas?",
+    options: [
+      "Nakasentro sa pamilya, hospitable, at mahilig sa kasayahan/kapistahan",
+      "Walang paggalang sa nakatatanda",
+      "Iwas sa kapwa tao",
+      "Walang kapistahan"
+    ],
+    correct: "Nakasentro sa pamilya, hospitable, at mahilig sa kasayahan/kapistahan"
+  },
+  {
+    question: "Alin sa mga sumusunod ang relihiyon sa Pilipinas?",
+    options: [
+      "Katoliko Romano, Aglipayan, Islam, Buddhism, at animism",
+      "Confucianism lamang",
+      "Cao Dai lamang",
+      "Shinto lamang"
+    ],
+    correct: "Katoliko Romano, Aglipayan, Islam, Buddhism, at animism"
+  },
+  {
+    question: "Alin sa mga sumusunod ang etnikong pangkat sa Indonesia?",
+    options: ["Javanese, Sundanese, Madurese, Balinese", "Tagalog, Cebuano, Ilokano", "Khmer, Cham", "Bamar, Shan"],
+    correct: "Javanese, Sundanese, Madurese, Balinese"
+  },
+  {
+    question: "Sa Singapore, aling tatlong pangkat ang pangunahing bumubuo ng populasyon?",
+    options: ["Chinese, Malay, at Indian", "Javanese, Balinese, at Malay", "Thai, Lao, at Khmer", "Bamar, Karen, at Shan"],
+    correct: "Chinese, Malay, at Indian"
+  },
+  {
+    question: "Ano ang pangunahing relihiyon sa Brunei?",
+    options: ["Islam", "Buddhism", "Katoliko Romano", "Hinduism"],
+    correct: "Islam"
+  },
+  {
+    question: "Alin sa mga sumusunod ang etnikong pangkat sa Timor Leste?",
+    options: ["Papuan, Malayan, at Polynesian", "Javanese at Sundanese", "Bamar at Karen", "Tai-Kadai"],
+    correct: "Papuan, Malayan, at Polynesian"
+  },
+  {
+    question: "Ano ang kinship o pagkakamag-anakan?",
+    options: [
+      "Relasyon ng mga indibidwal na nagmula sa iisang linya ng dugo o ninuno",
+      "Relasyon sa pagitan ng magkaibang bansa",
+      "Relasyon sa trabaho",
+      "Relasyon sa relihiyon"
+    ],
+    correct: "Relasyon ng mga indibidwal na nagmula sa iisang linya ng dugo o ninuno"
+  },
+  {
+    question: "Anong sistema ng kinship ang nakabatay sa linya ng kalalakihang ninuno?",
+    options: ["Patrilineal", "Matrilineal", "Bilateral", "Neolokal"],
+    correct: "Patrilineal"
+  },
+  {
+    question: "Anong sistema ng kinship ang nakabatay sa linya ng kababaihan?",
+    options: ["Matrilineal", "Patrilineal", "Bilateral", "Patriarchal"],
+    correct: "Matrilineal"
+  },
+  {
+    question: "Anong sistema ng kinship ang itinuturing na mahalaga ang angkan ng magkabilang magulang?",
+    options: ["Bilateral", "Patrilineal", "Matrilineal", "Unilineal"],
+    correct: "Bilateral"
+  },
+  {
+    question: "Ano ang Sultanato sa Sulu?",
+    options: [
+      "Isang estadong Muslim na namuno sa mga pulo ng Sulu Sea sa katimugan ng Pilipinas",
+      "Isang imperyong Buddhist sa Cambodia",
+      "Isang kaharian sa Vietnam",
+      "Isang republika sa Indonesia"
+    ],
+    correct: "Isang estadong Muslim na namuno sa mga pulo ng Sulu Sea sa katimugan ng Pilipinas"
+  },
+  {
+    question: "Kailan itinatag ang Sultanato sa Sulu?",
+    options: ["1457", "1521", "1600", "1898"],
+    correct: "1457"
+  },
+  {
+    question: "Sino ang nagtatag ng Sultanato sa Sulu?",
+    options: ["Raja Baguinda Ali", "Jayavarman II", "Rajah Sulayman", "Datu Lapu-Lapu"],
+    correct: "Raja Baguinda Ali"
+  },
+  {
+    question: "Ano ang tawag sa konsehong binubuo ng anim na miyembro na tumutulong sa sultan sa Sulu?",
+    options: ["Ruma Bichara Assembly", "Devaraja Council", "Mandala Circle", "Katipunan"],
+    correct: "Ruma Bichara Assembly"
+  },
+  {
+    question: "Saan nagmula ang salitang 'mandala'?",
+    options: ["Salitang Sanskrit na nangangahulugang sagradong bilog", "Salitang Griyego", "Salitang Khmer", "Salitang Malay"],
+    correct: "Salitang Sanskrit na nangangahulugang sagradong bilog"
+  },
+  {
+    question: "Ano ang Devaraja?",
+    options: [
+      "Isang kultong nagturing sa mga haring Khmer bilang 'God-King'",
+      "Isang uri ng bangka sa Pilipinas",
+      "Isang pistang taunan sa Thailand",
+      "Isang uring ng bigas sa Vietnam"
+    ],
+    correct: "Isang kultong nagturing sa mga haring Khmer bilang 'God-King'"
+  },
+  {
+    question: "Sino ang nagtatag ng Devaraja at ng Imperyong Khmer?",
+    options: ["Jayavarman II", "Raja Baguinda Ali", "Rajah Humabon", "Ho Chi Minh"],
+    correct: "Jayavarman II"
+  },
+  {
+    question: "Anong taon (humigit-kumulang) namuhay si Jayavarman II?",
+    options: ["770–850", "1200–1300", "1500–1600", "100–200"],
+    correct: "770–850"
+  }
+];
+
+// ---------- State ----------
+let quiz = [];
+let currentIndex = 0;
+let userAnswers = [];
+
+// ---------- Utility ----------
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildQuiz() {
+  const shuffledQuestions = shuffleArray(questionBank);
+  quiz = shuffledQuestions.map(q => {
+    return {
+      question: q.question,
+      options: shuffleArray(q.options),
+      correct: q.correct
+    };
+  });
+  userAnswers = new Array(quiz.length).fill(null);
+  currentIndex = 0;
+}
+
+// ---------- DOM Elements ----------
+const quizScreen = document.getElementById('quizScreen');
+const resultsScreen = document.getElementById('resultsScreen');
+const progressText = document.getElementById('progressText');
+const questionText = document.getElementById('questionText');
+const optionsList = document.getElementById('optionsList');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const scoreLine = document.getElementById('scoreLine');
+const percentLine = document.getElementById('percentLine');
+const reviewList = document.getElementById('reviewList');
+const restartBtn = document.getElementById('restartBtn');
+
+// ---------- Render ----------
+function renderQuestion() {
+  const q = quiz[currentIndex];
+  progressText.textContent = "Tanong " + (currentIndex + 1) + " sa " + quiz.length;
+  questionText.textContent = q.question;
+  optionsList.innerHTML = "";
+
+  q.options.forEach(opt => {
+    const li = document.createElement('li');
+    li.textContent = opt;
+    if (userAnswers[currentIndex] === opt) {
+      li.classList.add('selected');
+    }
+    li.addEventListener('click', () => {
+      userAnswers[currentIndex] = opt;
+      renderQuestion();
+    });
+    optionsList.appendChild(li);
+  });
+
+  prevBtn.disabled = currentIndex === 0;
+  nextBtn.textContent = (currentIndex === quiz.length - 1) ? "Tapos na" : "Susunod";
+}
+
+function showResults() {
+  quizScreen.classList.add('hidden');
+  resultsScreen.classList.remove('hidden');
+
+  let correctCount = 0;
+  reviewList.innerHTML = "";
+
+  quiz.forEach((q, i) => {
+    const userAns = userAnswers[i];
+    const isCorrect = userAns === q.correct;
+    if (isCorrect) correctCount++;
+
+    const div = document.createElement('div');
+    div.className = 'review-item ' + (isCorrect ? 'correct' : 'incorrect');
+
+    const qP = document.createElement('p');
+    qP.innerHTML = "<strong>T" + (i + 1) + ":</strong> " + q.question;
+    div.appendChild(qP);
+
+    const yourP = document.createElement('p');
+    yourP.className = isCorrect ? 'label-correct' : 'label-incorrect';
+    yourP.textContent = "Sagot mo: " + (userAns !== null ? userAns : "(walang sagot)");
+    div.appendChild(yourP);
+
+    if (!isCorrect) {
+      const corrP = document.createElement('p');
+      corrP.textContent = "Tamang sagot: " + q.correct;
+      div.appendChild(corrP);
+    }
+
+    reviewList.appendChild(div);
+  });
+
+  const percent = Math.round((correctCount / quiz.length) * 100);
+  scoreLine.textContent = "Nakuha mo ang " + correctCount + " sa " + quiz.length + " tanong.";
+  percentLine.textContent = "Marka: " + percent + "%";
+}
+
+// ---------- Navigation ----------
+prevBtn.addEventListener('click', () => {
+  if (currentIndex > 0) {
+    currentIndex--;
+    renderQuestion();
+  }
+});
+
+nextBtn.addEventListener('click', () => {
+  if (currentIndex < quiz.length - 1) {
+    currentIndex++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+});
+
+restartBtn.addEventListener('click', () => {
+  resultsScreen.classList.add('hidden');
+  quizScreen.classList.remove('hidden');
+  buildQuiz();
+  renderQuestion();
+});
+
+// ---------- Init ----------
+buildQuiz();
+renderQuestion();
+</script>
+
+</body>
+</html>
